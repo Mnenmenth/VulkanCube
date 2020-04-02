@@ -9,19 +9,24 @@
 #define GLFW_INCLUDE_VULKAN
 #include <vector>
 #include "SwapChainSupportDetails.h"
+#include "NonCopyable.h"
+#include "NonMoveable.h"
 
 namespace vkc
 {
     class Device;
     class Window;
 
-    class SwapChain
+    class SwapChain : public NonCopyable, public NonMoveable
     {
     public:
-        SwapChain(const vkc::Device& device, const vkc::Window& window, const VkSwapchainKHR& oldSwapChain);
-        SwapChain(const vkc::Device& device, const vkc::Window& window) : SwapChain(device, window, VK_NULL_HANDLE) {}
+        SwapChain(const vkc::Device& device, const vkc::Window& window);
         ~SwapChain();
-        //TODO: Copy constructor for recreating swap chain
+
+        auto recreate() -> void;
+
+        [[nodiscard]]
+        inline auto getSupportDetails() const -> const SwapChainSupportDetails& { return m_supportDetails; }
 
         static auto QuerySwapChainSupport(const VkPhysicalDevice& device, const VkSurfaceKHR& surface) -> vkc::SwapChainSupportDetails;
         static auto ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, const vkc::Window& window) -> VkExtent2D;
@@ -30,6 +35,7 @@ namespace vkc
         const vkc::Device& m_device;
         const vkc::Window& m_window;
 
+        SwapChainSupportDetails m_supportDetails;
         VkSwapchainKHR m_swapChain;
 
         // Swap chain image handles
@@ -38,6 +44,11 @@ namespace vkc
 
         VkFormat m_imageFormat;
         VkExtent2D m_extent;
+
+        auto createSwapChain() -> void;
+        auto createImageViews() -> void;
+
+        auto destroyImageViews() -> void;
     };
 }
 

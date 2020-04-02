@@ -6,7 +6,6 @@
 #include <vector>
 #include <set>
 #include <map>
-#include <iostream>
 #include "Device.h"
 #include "Instance.h"
 #include "SwapChain.h"
@@ -22,9 +21,8 @@ vkc::Device::Device(const vkc::Instance& instance, const VkSurfaceKHR& surface, 
 {
 
     auto device = FindPhysicalDevice(instance.get(), surface, extensions);
-    m_physical = std::get<0>(device);
-    m_indices = std::get<1>(device);
-    m_swapChainSupport = std::get<2>(device);
+    m_physical = device.first;
+    m_indices = device.second;
 
     // Setup queue families for device
     std::set<type::uint32> uniqueQueueFamilies =
@@ -108,20 +106,20 @@ auto vkc::Device::RatePhysicalDevice(
         const VkPhysicalDevice& device,
         const VkSurfaceKHR& surface,
         const std::vector<type::cstr>& requiredExtensions
-        ) -> std::tuple<int, vkc::QueueFamilyIndices, vkc::SwapChainSupportDetails>
+        ) -> std::pair<int, vkc::QueueFamilyIndices>
 {
     // Device isn't suitable if it doesn't support required queue families and extensions
     QueueFamilyIndices indices = vkc::QueueFamily::FindQueueFamilies(device, surface);
     if(!indices.isComplete() || !CheckExtensionSupport(device, requiredExtensions))
     {
-        return std::make_tuple(0, indices, SwapChainSupportDetails{});
+        return std::make_pair(0, indices);
     }
 
     // Device isn't suitable if there isn't at least one format and present mode
     SwapChainSupportDetails swapChainSupport = SwapChain::QuerySwapChainSupport(device, surface);
     if(swapChainSupport.formats.empty() || swapChainSupport.presentModes.empty())
     {
-        return std::make_tuple(0, indices, swapChainSupport);
+        return std::make_pair(0, indices);
     }
 
     VkPhysicalDeviceProperties deviceProperties;
@@ -139,14 +137,14 @@ auto vkc::Device::RatePhysicalDevice(
 
     score += deviceProperties.limits.maxImageDimension2D;
 
-    return std::make_tuple(score, indices, swapChainSupport);
+    return std::make_pair(score, indices);
 }
 
 auto vkc::Device::FindPhysicalDevice(
         const VkInstance& instance,
         const VkSurfaceKHR& surface,
         const std::vector<type::cstr>& requiredExtensions
-        )-> std::tuple<VkPhysicalDevice, vkc::QueueFamilyIndices, vkc::SwapChainSupportDetails>
+        )-> std::pair<VkPhysicalDevice, vkc::QueueFamilyIndices>
 {
     // Check for devices with vulkan support
     type::uint32 deviceCount;
@@ -162,14 +160,14 @@ auto vkc::Device::FindPhysicalDevice(
 
     // Order devices by rating
     int highestRating = 0;
-    std::tuple<VkPhysicalDevice, vkc::QueueFamilyIndices, vkc::SwapChainSupportDetails> highestRated;
+    std::pair<VkPhysicalDevice, vkc::QueueFamilyIndices> highestRated;
     for(const auto& d : devices)
     {
         auto rating = RatePhysicalDevice(d, surface, requiredExtensions);
         if(std::get<0>(rating) > highestRating)
         {
             highestRating = std::get<0>(rating);
-            highestRated = std::make_tuple(d, std::get<1>(rating), std::get<2>(rating));
+            highestRated = std::make_pair(d, std::get<1>(rating));
         }
     }
 

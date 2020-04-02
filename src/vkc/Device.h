@@ -6,9 +6,9 @@
 #ifndef VULKANCUBE_DEVICE_H
 #define VULKANCUBE_DEVICE_H
 
+#include <vulkan/vulkan.h>
 #include "Types.h"
 #include "NonCopyable.h"
-#include "SwapChainSupportDetails.h"
 #include "QueueFamilyIndices.h"
 
 namespace vkc
@@ -31,8 +31,6 @@ namespace vkc
         inline auto getGraphicsQueue() const -> const VkQueue& { return m_graphicsQueue; }
         [[nodiscard]]
         inline auto getPresentQueue() const -> const VkQueue& { return m_presentQueue; }
-        [[nodiscard]]
-        inline auto getSwapChainDetails() const -> const vkc::SwapChainSupportDetails& { return m_swapChainSupport; }
 
     private:
         VkPhysicalDevice m_physical;
@@ -44,19 +42,18 @@ namespace vkc
         vkc::QueueFamilyIndices m_indices;
         VkQueue m_graphicsQueue;
         VkQueue m_presentQueue;
-        vkc::SwapChainSupportDetails m_swapChainSupport;
 
         static auto CheckExtensionSupport(const VkPhysicalDevice& device, const std::vector<type::cstr>& extensions) -> bool;
         static auto RatePhysicalDevice(
                 const VkPhysicalDevice& device,
                 const VkSurfaceKHR& surface,
                 const std::vector<type::cstr>& requiredExtensions
-                ) -> std::tuple<int, vkc::QueueFamilyIndices, vkc::SwapChainSupportDetails>;
+                ) -> std::pair<int, vkc::QueueFamilyIndices>;
         static auto FindPhysicalDevice(
                 const VkInstance& instance,
                 const VkSurfaceKHR& surface,
                 const std::vector<type::cstr>& requiredExtensions
-                ) -> std::tuple<VkPhysicalDevice, vkc::QueueFamilyIndices, vkc::SwapChainSupportDetails>;
+                ) -> std::pair<VkPhysicalDevice, vkc::QueueFamilyIndices>;
     };
 }
 

@@ -12,7 +12,8 @@ vkc::Window::Window(const glm::ivec2& dimensions, const std::string& title, cons
         m_title(title),
         m_instance(instance),
         m_surface(),
-        m_drawFrameFunc([](){})
+        m_framebufferResized(false),
+        m_drawFrameFunc([](bool&){})
 {
 /*    glfwInit();
 
@@ -40,7 +41,7 @@ auto vkc::Window::mainLoop() -> void
     while(!glfwWindowShouldClose(m_window))
     {
         glfwPollEvents();
-        m_drawFrameFunc();
+        m_drawFrameFunc(m_framebufferResized);
     }
 }
 
@@ -55,6 +56,6 @@ auto vkc::Window::GetRequiredExtensions(std::vector<type::cstr>& out) -> void
 auto vkc::Window::framebufferResizeCallback(GLFWwindow* window, int width, int height) -> void
 {
     vkc::Window* win = reinterpret_cast<vkc::Window*>(glfwGetWindowUserPointer(window));
-    //TODO: Schedule recreate swap chain
+    win->m_framebufferResized = true;
 }
 

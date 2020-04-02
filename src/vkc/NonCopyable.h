@@ -10,6 +10,6 @@ class NonCopyable
 public:
     NonCopyable() = default;
     NonCopyable(const NonCopyable&) = delete;
-    NonCopyable& operator=(const NonCopyable&) = delete;
+    auto operator=(const NonCopyable&) -> NonCopyable& = delete;
 };
 #endif //VULKANCUBE_NONCOPYABLE_H

@@ -11,6 +11,7 @@
 #include <glm/glm.hpp>
 #include <string>
 #include <vector>
+#include <functional>
 #include "Types.h"
 #include "NonCopyable.h"
 
@@ -20,7 +21,7 @@ namespace vkc
     class Window : public NonCopyable
     {
     public:
-        using DrawFrameFunc = void(*)();
+        //using DrawFrameFunc = void(*)(bool& framebufferResized);
 
         Window(const glm::ivec2& dimensions, const std::string& title, const vkc::Instance &instance);
         Window() = delete;
@@ -34,16 +35,9 @@ namespace vkc
         [[nodiscard]]
         inline auto getSurface() const -> const VkSurfaceKHR& { return m_surface; }
 
-        [[nodiscard]]
-        inline auto getFramebufferSize() const -> glm::ivec2
-        {
-            glm::ivec2 size;
-            glfwGetFramebufferSize(m_window, &size[0], &size[1]);
-            return size;
-        }
+        inline auto getFramebufferSize(glm::ivec2& size) const -> void { glfwGetFramebufferSize(m_window, &size[0], &size[1]); }
 
-
-        inline auto setDrawFrameFunc(const DrawFrameFunc& func) -> void { m_drawFrameFunc = func; }
+        inline auto setDrawFrameFunc(const std::function<void(bool&)>& func) -> void { m_drawFrameFunc = func; }
 
         static auto GetRequiredExtensions(std::vector<type::cstr>& out) -> void;
 
@@ -56,7 +50,8 @@ namespace vkc
         const vkc::Instance& m_instance;
         VkSurfaceKHR m_surface;
 
-        DrawFrameFunc m_drawFrameFunc;
+        bool m_framebufferResized;
+        std::function<void(bool&)> m_drawFrameFunc;
 
         static auto framebufferResizeCallback(GLFWwindow* window, int width, int height) -> void;
 
