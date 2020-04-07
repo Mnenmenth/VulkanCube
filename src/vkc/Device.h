@@ -14,11 +14,11 @@
 namespace vkc
 {
     class Instance;
-
+    class Window;
     class Device : public NonCopyable
     {
     public:
-        Device(const vkc::Instance& instance, const VkSurfaceKHR& surface, const std::vector<type::cstr>& extensions);
+        Device(const vkc::Instance& instance, const vkc::Window& window, const std::vector<type::cstr>& extensions);
         ~Device();
 
         [[nodiscard]]
@@ -37,7 +37,7 @@ namespace vkc
         VkDevice m_logical;
 
         const vkc::Instance& m_instance;
-        const VkSurfaceKHR& m_surface;
+        const vkc::Window& m_window;
 
         vkc::QueueFamilyIndices m_indices;
         VkQueue m_graphicsQueue;

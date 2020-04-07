@@ -12,15 +12,18 @@
 
 namespace vkc
 {
+    class Instance;
     class DebugUtilsMessenger : public NonCopyable
     {
     public:
-        explicit DebugUtilsMessenger(const VkInstance& instance);
+        explicit DebugUtilsMessenger(const vkc::Instance& instance);
 
         ~DebugUtilsMessenger();
 
         [[nodiscard]]
-        inline auto get() const -> const VkDebugUtilsMessengerEXT& { return m_messenger; }
+        inline auto getHandle() const -> const VkDebugUtilsMessengerEXT& { return m_messenger; }
+        [[nodiscard]]
+        inline auto getInstance() const -> const vkc::Instance& { return m_instance; }
 
         static auto DebugCallback(
                 VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -32,7 +35,7 @@ namespace vkc
         static auto PopulateCreateInfo(VkDebugUtilsMessengerCreateInfoEXT&) -> void;
 
     private:
-        const VkInstance& m_instance;
+        const vkc::Instance& m_instance;
         VkDebugUtilsMessengerEXT m_messenger;
     };
 }

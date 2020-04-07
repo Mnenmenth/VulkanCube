@@ -24,7 +24,7 @@ namespace vkc {
         ~Instance();
 
         [[nodiscard]]
-        inline auto get() const -> const VkInstance& { return m_instance; }
+        inline auto getHandle() const -> const VkInstance& { return m_instance; }
 
         [[nodiscard]]
         auto validationLayersEnabled() const -> bool { return m_validationLayers; }
@@ -35,8 +35,6 @@ namespace vkc {
     private:
         VkInstance m_instance;
         bool m_validationLayers;
-
-        vkc::DebugUtilsMessenger* m_debugMessenger;
 
         static auto CheckValidationLayerSupport() -> bool;
         static auto GetRequiredExtensions(std::vector<type::cstr>& extensions, bool validationLayers) -> void;

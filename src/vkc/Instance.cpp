@@ -20,7 +20,7 @@ const std::vector<type::cstr> vkc::Instance::DeviceExtensions =
         };
 
 vkc::Instance::Instance(const char* appName, const char* engineName, bool validationLayers) :
-        m_instance(),
+        m_instance(VK_NULL_HANDLE),
         m_validationLayers(validationLayers)
 {
     if(m_validationLayers && !CheckValidationLayerSupport())
@@ -64,18 +64,10 @@ vkc::Instance::Instance(const char* appName, const char* engineName, bool valida
         throw std::runtime_error("Vulkan instance creation failed");
     }
 
-    if(m_validationLayers)
-    {
-        m_debugMessenger = new DebugUtilsMessenger(m_instance);
-    }
 }
 
 vkc::Instance::~Instance()
 {
-    if(m_validationLayers)
-    {
-        delete m_debugMessenger;
-    }
     vkDestroyInstance(m_instance, nullptr);
 }
 

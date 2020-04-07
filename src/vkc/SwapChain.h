@@ -6,37 +6,44 @@
 #ifndef VULKANCUBE_SWAPCHAIN_H
 #define VULKANCUBE_SWAPCHAIN_H
 
-#define GLFW_INCLUDE_VULKAN
 #include <vector>
 #include "SwapChainSupportDetails.h"
 #include "NonCopyable.h"
-#include "NonMoveable.h"
+#include "Recreatable.h"
 
 namespace vkc
 {
     class Device;
     class Window;
 
-    class SwapChain : public NonCopyable, public NonMoveable
+    class SwapChain : public NonCopyable, public Recreatable
     {
     public:
-        SwapChain(const vkc::Device& device, const vkc::Window& window);
+        explicit SwapChain(const vkc::Device& device);
         ~SwapChain();
 
-        auto recreate() -> void;
+        auto recreate() -> void override;
+        auto cleanup() -> void override;
 
         [[nodiscard]]
-        inline auto getSupportDetails() const -> const SwapChainSupportDetails& { return m_supportDetails; }
+        inline auto getHandle() const -> const VkSwapchainKHR& { return m_swapChain; }
+        [[nodiscard]]
+        inline auto getImageFormat() const -> const VkFormat& { return m_imageFormat; }
+        [[nodiscard]]
+        inline auto getExtent() const -> const VkExtent2D& { return m_extent; }
+
+        [[nodiscard]]
+        inline auto getSupportDetails() const -> const vkc::SwapChainSupportDetails& { return m_supportDetails; }
 
         static auto QuerySwapChainSupport(const VkPhysicalDevice& device, const VkSurfaceKHR& surface) -> vkc::SwapChainSupportDetails;
         static auto ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, const vkc::Window& window) -> VkExtent2D;
 
     private:
         const vkc::Device& m_device;
-        const vkc::Window& m_window;
 
         SwapChainSupportDetails m_supportDetails;
         VkSwapchainKHR m_swapChain;
+        VkSwapchainKHR m_oldSwapChain;
 
         // Swap chain image handles
         std::vector<VkImage> m_images;

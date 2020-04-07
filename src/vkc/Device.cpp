@@ -8,19 +8,20 @@
 #include <map>
 #include "Device.h"
 #include "Instance.h"
+#include "Window.h"
 #include "SwapChain.h"
 #include "QueueFamily.h"
 
-vkc::Device::Device(const vkc::Instance& instance, const VkSurfaceKHR& surface, const std::vector<type::cstr>& extensions) :
-        m_physical(),
-        m_logical(),
+vkc::Device::Device(const vkc::Instance& instance, const vkc::Window& window, const std::vector<type::cstr>& extensions) :
+        m_physical(VK_NULL_HANDLE),
+        m_logical(VK_NULL_HANDLE),
+        m_window(window),
         m_instance(instance),
-        m_surface(surface),
-        m_graphicsQueue(),
-        m_presentQueue()
+        m_graphicsQueue(VK_NULL_HANDLE),
+        m_presentQueue(VK_NULL_HANDLE)
 {
 
-    auto device = FindPhysicalDevice(instance.get(), surface, extensions);
+    auto device = FindPhysicalDevice(m_instance.getHandle(), m_window.getSurface(), extensions);
     m_physical = device.first;
     m_indices = device.second;
 
@@ -54,7 +55,7 @@ vkc::Device::Device(const vkc::Instance& instance, const VkSurfaceKHR& surface, 
     createInfo.enabledExtensionCount = static_cast<type::uint32>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
 
-    if(instance.validationLayersEnabled())
+    if(m_window.getInstance().validationLayersEnabled())
     {
         createInfo.enabledLayerCount = static_cast<type::uint32>(vkc::Instance::ValidationLayers.size());
         createInfo.ppEnabledLayerNames = vkc::Instance::ValidationLayers.data();

@@ -6,38 +6,45 @@
 
 #include <iostream>
 #include "DebugUtilsMessenger.h"
+#include "Instance.h"
 
-vkc::DebugUtilsMessenger::DebugUtilsMessenger(const VkInstance& instance) : m_instance(instance), m_messenger()
+vkc::DebugUtilsMessenger::DebugUtilsMessenger(const vkc::Instance& instance) : m_messenger(VK_NULL_HANDLE), m_instance(instance)
 {
-    // Setup the debug messenger
-    VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
-    PopulateCreateInfo(createInfo);
-
-    // Get pointer to extension function
-    auto createFunc = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(m_instance, "vkCreateDebugUtilsMessengerEXT");
-
-    if(createFunc == nullptr)
+    if(m_instance.validationLayersEnabled())
     {
-        throw std::runtime_error("Debug Utils Messenger extension not available");
-    }
+        // Setup the debug messenger
+        VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
+        PopulateCreateInfo(createInfo);
 
-    // Create the messenger
-    VkResult result = createFunc(m_instance, &createInfo, nullptr, &m_messenger);
+        // Get pointer to extension function
+        auto createFunc = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(m_instance.getHandle(), "vkCreateDebugUtilsMessengerEXT");
 
-    if(result != VK_SUCCESS)
-    {
-        throw std::runtime_error("Failed to setup Debug Utils Messenger");
+        if(createFunc == nullptr)
+        {
+            throw std::runtime_error("Debug Utils Messenger extension not available");
+        }
+
+        // Create the messenger
+        VkResult result = createFunc(m_instance.getHandle(), &createInfo, nullptr, &m_messenger);
+
+        if(result != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to setup Debug Utils Messenger");
+        }
     }
 }
 
 vkc::DebugUtilsMessenger::~DebugUtilsMessenger()
 {
-    auto destroyFunc = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(m_instance, "vkDestroyDebugUtilsMessengerEXT");
-    if(destroyFunc == nullptr)
+    if(m_instance.validationLayersEnabled())
     {
-        throw std::runtime_error("Failed to destroy Debug Utils Messenger");
+        auto destroyFunc = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(m_instance.getHandle(), "vkDestroyDebugUtilsMessengerEXT");
+        if(destroyFunc == nullptr)
+        {
+            throw std::runtime_error("Failed to destroy Debug Utils Messenger");
+        }
+        destroyFunc(m_instance.getHandle(), m_messenger, nullptr);
     }
-    destroyFunc(m_instance, m_messenger, nullptr);
 }
 
 auto vkc::DebugUtilsMessenger::PopulateCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) -> void
