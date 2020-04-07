@@ -21,7 +21,7 @@ vkc::Device::Device(const vkc::Instance& instance, const vkc::Window& window, co
         m_presentQueue(VK_NULL_HANDLE)
 {
 
-    auto device = FindPhysicalDevice(m_instance.getHandle(), m_window.getSurface(), extensions);
+    auto device = FindPhysicalDevice(m_instance.handle(), m_window.surface(), extensions);
     m_physical = device.first;
     m_indices = device.second;
 

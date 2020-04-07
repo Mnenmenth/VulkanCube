@@ -24,7 +24,7 @@ vkc::Window::Window(const glm::ivec2& dimensions, const std::string& title, cons
     glfwSetWindowUserPointer(m_window, this);
     glfwSetFramebufferSizeCallback(m_window, framebufferResizeCallback);
 
-    if(glfwCreateWindowSurface(m_instance.getHandle(), m_window, nullptr, &m_surface) != VK_SUCCESS)
+    if(glfwCreateWindowSurface(m_instance.handle(), m_window, nullptr, &m_surface) != VK_SUCCESS)
     {
         throw std::runtime_error("Unable to create window surface");
     }
@@ -32,7 +32,7 @@ vkc::Window::Window(const glm::ivec2& dimensions, const std::string& title, cons
 
 vkc::Window::~Window()
 {
-    vkDestroySurfaceKHR(m_instance.getHandle(), m_surface, nullptr);
+    vkDestroySurfaceKHR(m_instance.handle(), m_surface, nullptr);
     glfwDestroyWindow(m_window);
 }
 

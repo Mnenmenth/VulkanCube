@@ -25,20 +25,25 @@ namespace vkc
                 VkDeviceSize size,
                 const VkBufferUsageFlags& usageFlags,
                 const VkMemoryPropertyFlags& memPropFlags,
-                const VkSharingMode& sharingMode
+                const VkSharingMode& sharingMode,
+                bool useStagingBuffer
                 );
         ~Buffer();
 
         [[nodiscard]]
-        auto inline getSize() const -> VkDeviceSize { return m_size; }
+        inline auto handle() const -> const VkBuffer& { return m_buffer; }
+        [[nodiscard]]
+        auto inline size() const -> VkDeviceSize { return m_size; }
         //auto inline copyTo(vkc::Buffer& buffer) -> void { copyBuffer(buffer.m_buffer, buffer.m_size, 0, m_buffer, ); }
 
-        //TODO
-        //auto resize(type::uint32 size) -> void;
+        //TODO: Non-destructive resize
+        auto resize(type::uint32 size) -> void;
 
-        auto setContents(VkDeviceSize size, VkDeviceSize offset, void* data) -> void;
+        auto setContents(VkDeviceSize size, VkDeviceSize offset, const void* data) -> void;
 
     protected:
+        bool m_useStagingBuffer;
+
         VkPhysicalDeviceMemoryProperties m_memProp;
 
         VkBuffer m_buffer;
@@ -64,6 +69,9 @@ namespace vkc
                 const VkMemoryPropertyFlags& memPropFlags,
                 const VkSharingMode& sharingMode
                 ) -> void;
+
+        auto createBuffers() -> void;
+        auto destroyBuffers() -> void;
 
         const vkc::Device& m_device;
 

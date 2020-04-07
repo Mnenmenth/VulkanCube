@@ -13,35 +13,39 @@ vkc::RenderPass::RenderPass(const vkc::Device& device, const vkc::SwapChain& swa
         m_device(device),
         m_swapChain(swapChain)
 {
-    create();
+    createRenderPass();
+    createFrameBuffers();
 }
 
 vkc::RenderPass::~RenderPass()
 {
-    vkDestroyRenderPass(m_device.getLogical(), m_renderPass, nullptr);
+    destroyFrameBuffers();
+    vkDestroyRenderPass(m_device.logical(), m_renderPass, nullptr);
 }
 
 auto vkc::RenderPass::recreate() -> void
 {
+    destroyFrameBuffers();
     m_oldRenderPass = m_renderPass;
-    create();
+    createRenderPass();
+    createFrameBuffers();
 }
 
-auto vkc::RenderPass::cleanup() -> void
+auto vkc::RenderPass::cleanupOld() -> void
 {
     if(m_oldRenderPass != VK_NULL_HANDLE)
     {
-        vkDestroyRenderPass(m_device.getLogical(), m_oldRenderPass, nullptr);
+        vkDestroyRenderPass(m_device.logical(), m_oldRenderPass, nullptr);
         m_oldRenderPass = VK_NULL_HANDLE;
     }
 }
 
-auto vkc::RenderPass::create() -> void
+auto vkc::RenderPass::createRenderPass() -> void
 {
     // Create a new render pass as a color attachment
     VkAttachmentDescription colorAttachment = {};
     // Format should match the format of the swap chain
-    colorAttachment.format = m_swapChain.getImageFormat();
+    colorAttachment.format = m_swapChain.imageFormat();
     // No multisampling
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     // Clear data before rendering, then store result after
@@ -96,8 +100,42 @@ auto vkc::RenderPass::create() -> void
     createInfo.dependencyCount = 1;
     createInfo.pDependencies = &dependency;
 
-    if(vkCreateRenderPass(m_device.getLogical(), &createInfo, nullptr, &m_renderPass) != VK_SUCCESS)
+    if(vkCreateRenderPass(m_device.logical(), &createInfo, nullptr, &m_renderPass) != VK_SUCCESS)
     {
         throw std::runtime_error("Render pass creation failed");
+    }
+}
+
+auto vkc::RenderPass::createFrameBuffers() -> void
+{
+    type::size numImages = m_swapChain.numImages();
+
+    m_frameBuffers.resize(numImages);
+
+    // Create a framebuffer for each image view
+    for(type::size i = 0; i < numImages; ++i)
+    {
+        VkImageView imgView = m_swapChain.imageView(i);
+        VkFramebufferCreateInfo info = {};
+        info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        info.renderPass = m_renderPass;
+        info.attachmentCount = 1;
+        info.pAttachments = &imgView;
+        info.width = m_swapChain.extent().width;
+        info.height = m_swapChain.extent().height;
+        info.layers = 1;
+
+        if(vkCreateFramebuffer(m_device.logical(), &info, nullptr, &m_frameBuffers[i]) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Framebuffer creation failed");
+        }
+    }
+}
+
+auto vkc::RenderPass::destroyFrameBuffers() -> void
+{
+    for(VkFramebuffer& fb : m_frameBuffers)
+    {
+        vkDestroyFramebuffer(m_device.logical(), fb, nullptr);
     }
 }

@@ -31,12 +31,12 @@ namespace vkc
         ~GraphicsPipeline();
 
         auto recreate() -> void override;
-        auto cleanup() -> void override;
+        auto cleanupOld() -> void override;
 
         [[nodiscard]]
-        auto inline getPipeline() const -> const VkPipeline& { return m_pipeline; }
+        auto inline pipeline() const -> const VkPipeline& { return m_pipeline; }
         [[nodiscard]]
-        auto inline getLayout() const -> const VkPipelineLayout& { return m_layout; }
+        auto inline layout() const -> const VkPipelineLayout& { return m_layout; }
 
     private:
         VkPipeline m_pipeline;

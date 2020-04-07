@@ -37,8 +37,8 @@ vkc::GraphicsPipeline::GraphicsPipeline(
 
 vkc::GraphicsPipeline::~GraphicsPipeline()
 {
-    vkDestroyPipeline(m_device.getLogical(), m_pipeline, nullptr);
-    vkDestroyPipelineLayout(m_device.getLogical(), m_layout, nullptr);
+    vkDestroyPipeline(m_device.logical(), m_pipeline, nullptr);
+    vkDestroyPipelineLayout(m_device.logical(), m_layout, nullptr);
 }
 
 auto vkc::GraphicsPipeline::recreate() -> void
@@ -48,16 +48,16 @@ auto vkc::GraphicsPipeline::recreate() -> void
     createPipeline();
 }
 
-auto vkc::GraphicsPipeline::cleanup() -> void
+auto vkc::GraphicsPipeline::cleanupOld() -> void
 {
     if(m_oldPipeline != VK_NULL_HANDLE)
     {
-        vkDestroyPipeline(m_device.getLogical(), m_oldPipeline, nullptr);
+        vkDestroyPipeline(m_device.logical(), m_oldPipeline, nullptr);
         m_oldPipeline = VK_NULL_HANDLE;
     }
     if(m_oldLayout != VK_NULL_HANDLE)
     {
-        vkDestroyPipelineLayout(m_device.getLogical(), m_oldLayout, nullptr);
+        vkDestroyPipelineLayout(m_device.logical(), m_oldLayout, nullptr);
         m_oldLayout = VK_NULL_HANDLE;
     }
 }
@@ -101,8 +101,8 @@ auto vkc::GraphicsPipeline::createPipeline() -> void
     VkViewport viewport = {};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
-    viewport.width = static_cast<float>(m_swapChain.getExtent().width);
-    viewport.height = static_cast<float>(m_swapChain.getExtent().height);
+    viewport.width = static_cast<float>(m_swapChain.extent().width);
+    viewport.height = static_cast<float>(m_swapChain.extent().height);
     // Depth buffer range
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
@@ -110,7 +110,7 @@ auto vkc::GraphicsPipeline::createPipeline() -> void
     // Pixel boundary cutoff
     VkRect2D scissor = {};
     scissor.offset = {0, 0};
-    scissor.extent = m_swapChain.getExtent();
+    scissor.extent = m_swapChain.extent();
 
     // Combine viewport(s) and scissor(s) (some graphics cards allow multiple of each)
     VkPipelineViewportStateCreateInfo viewportState = {};
@@ -172,7 +172,7 @@ auto vkc::GraphicsPipeline::createPipeline() -> void
     layoutInfo.pushConstantRangeCount = 0;
     layoutInfo.pPushConstantRanges = nullptr;
 
-    if(vkCreatePipelineLayout(m_device.getLogical(), &layoutInfo, nullptr, &m_layout) != VK_SUCCESS)
+    if(vkCreatePipelineLayout(m_device.logical(), &layoutInfo, nullptr, &m_layout) != VK_SUCCESS)
     {
         throw std::runtime_error("Pipeline Layout creation failed");
     }
@@ -191,7 +191,7 @@ auto vkc::GraphicsPipeline::createPipeline() -> void
     pipelineInfo.pDepthStencilState = nullptr;
     pipelineInfo.pDynamicState = nullptr;
     pipelineInfo.layout = m_layout;
-    pipelineInfo.renderPass = m_renderPass.getHandle();
+    pipelineInfo.renderPass = m_renderPass.handle();
     pipelineInfo.subpass = 0;
 
     if(m_oldLayout != VK_NULL_HANDLE)
@@ -201,14 +201,14 @@ auto vkc::GraphicsPipeline::createPipeline() -> void
     pipelineInfo.basePipelineHandle = m_oldPipeline;
     pipelineInfo.basePipelineIndex = -1;
 
-    if(vkCreateGraphicsPipelines(m_device.getLogical(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_pipeline) != VK_SUCCESS)
+    if(vkCreateGraphicsPipelines(m_device.logical(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_pipeline) != VK_SUCCESS)
     {
         throw std::runtime_error("Graphics Pipeline creation failed");
     }
 
     for(auto& shader : shaderStages)
     {
-        vkDestroyShaderModule(m_device.getLogical(), shader.module, nullptr);
+        vkDestroyShaderModule(m_device.logical(), shader.module, nullptr);
     }
 }
 
@@ -222,7 +222,7 @@ auto vkc::GraphicsPipeline::createShaderModule(const std::vector<char>& code) ->
     info.pCode = reinterpret_cast<const type::uint32*>(code.data());
 
     VkShaderModule module;
-    if(vkCreateShaderModule(m_device.getLogical(), &info, nullptr, &module) != VK_SUCCESS)
+    if(vkCreateShaderModule(m_device.logical(), &info, nullptr, &module) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to create shader module");
     }

@@ -29,13 +29,13 @@ namespace vkc
         auto mainLoop() -> void;
 
         [[nodiscard]]
-        inline auto getDimensions() const -> const glm::ivec2& { return m_dimensions; }
+        inline auto dimensions() const -> const glm::ivec2& { return m_dimensions; }
         [[nodiscard]]
-        inline auto getWindow() const -> const GLFWwindow* { return m_window; }
+        inline auto window() const -> const GLFWwindow* { return m_window; }
         [[nodiscard]]
-        inline auto getSurface() const -> const VkSurfaceKHR& { return m_surface; }
+        inline auto surface() const -> const VkSurfaceKHR& { return m_surface; }
 
-        inline auto getFramebufferSize(glm::ivec2& size) const -> void { glfwGetFramebufferSize(m_window, &size[0], &size[1]); }
+        inline auto framebufferSize(glm::ivec2& size) const -> void { glfwGetFramebufferSize(m_window, &size[0], &size[1]); }
 
         inline auto setDrawFrameFunc(const std::function<void(bool&)>& func) -> void { m_drawFrameFunc = func; }
 

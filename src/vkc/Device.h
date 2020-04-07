@@ -23,9 +23,9 @@ namespace vkc
         ~Device();
 
         [[nodiscard]]
-        inline auto getPhysical() const -> const VkPhysicalDevice& { return m_physical; }
+        inline auto physical() const -> const VkPhysicalDevice& { return m_physical; }
         [[nodiscard]]
-        inline auto getLogical() const -> const VkDevice& { return m_logical; }
+        inline auto logical() const -> const VkDevice& { return m_logical; }
         [[nodiscard]]
         inline auto getQueueFamilyIndices() const -> const vkc::QueueFamilyIndices& { return m_indices; }
         [[nodiscard]]

@@ -7,10 +7,20 @@
 #define VULKANCUBE_VERTEXBUFFER_H
 
 
-class VertexBuffer
-{
+#include "../NonCopyable.h"
 
-};
+namespace vkc
+{
+    class Device;
+    class Buffer;
+    class VertexBuffer : public NonCopyable
+    {
+    public:
+        //! Buffer must already be appropriately sized
+        VertexBuffer();
+        ~VertexBuffer();
+    };
+}
 
 
 #endif //VULKANCUBE_VERTEXBUFFER_H

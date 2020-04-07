@@ -21,9 +21,7 @@ namespace vkc
         ~DebugUtilsMessenger();
 
         [[nodiscard]]
-        inline auto getHandle() const -> const VkDebugUtilsMessengerEXT& { return m_messenger; }
-        [[nodiscard]]
-        inline auto getInstance() const -> const vkc::Instance& { return m_instance; }
+        inline auto handle() const -> const VkDebugUtilsMessengerEXT& { return m_messenger; }
 
         static auto DebugCallback(
                 VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,

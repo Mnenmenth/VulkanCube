@@ -10,6 +10,7 @@
 #include "SwapChainSupportDetails.h"
 #include "../NonCopyable.h"
 #include "../Recreatable.h"
+#include "../Types.h"
 
 namespace vkc
 {
@@ -23,17 +24,21 @@ namespace vkc
         ~SwapChain();
 
         auto recreate() -> void override;
-        auto cleanup() -> void override;
+        auto cleanupOld() -> void override;
 
         [[nodiscard]]
-        inline auto getHandle() const -> const VkSwapchainKHR& { return m_swapChain; }
+        inline auto handle() const -> const VkSwapchainKHR& { return m_swapChain; }
         [[nodiscard]]
-        inline auto getImageFormat() const -> const VkFormat& { return m_imageFormat; }
+        inline auto imageFormat() const -> const VkFormat& { return m_imageFormat; }
         [[nodiscard]]
-        inline auto getExtent() const -> const VkExtent2D& { return m_extent; }
+        inline auto extent() const -> const VkExtent2D& { return m_extent; }
+        [[nodiscard]]
+        inline auto numImages() const -> type::size { return m_images.size(); }
 
         [[nodiscard]]
-        inline auto getSupportDetails() const -> const vkc::SwapChainSupportDetails& { return m_supportDetails; }
+        inline auto supportDetails() const -> const vkc::SwapChainSupportDetails& { return m_supportDetails; }
+        [[nodiscard]]
+        inline auto imageView(type::uint32 index) const -> VkImageView { return m_imageViews[index]; }
 
         static auto QuerySwapChainSupport(const VkPhysicalDevice& device, const VkSurfaceKHR& surface) -> vkc::SwapChainSupportDetails;
         static auto ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, const vkc::Window& window) -> VkExtent2D;

@@ -22,7 +22,7 @@ namespace vkc {
         ~Instance();
 
         [[nodiscard]]
-        inline auto getHandle() const -> const VkInstance& { return m_instance; }
+        inline auto handle() const -> const VkInstance& { return m_instance; }
 
         [[nodiscard]]
         auto validationLayersEnabled() const -> bool { return m_validationLayers; }

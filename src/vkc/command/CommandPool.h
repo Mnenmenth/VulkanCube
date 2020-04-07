@@ -19,7 +19,7 @@ namespace vkc
         ~CommandPool();
 
         [[nodiscard]]
-        auto getHandle() const -> const VkCommandPool& { return m_pool; };
+        auto handle() const -> const VkCommandPool& { return m_pool; };
     private:
         VkCommandPool m_pool;
         VkCommandPoolCreateFlags m_flags;

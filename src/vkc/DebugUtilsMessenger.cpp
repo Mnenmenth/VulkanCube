@@ -17,7 +17,7 @@ vkc::DebugUtilsMessenger::DebugUtilsMessenger(const vkc::Instance& instance) : m
         PopulateCreateInfo(createInfo);
 
         // Get pointer to extension function
-        auto createFunc = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(m_instance.getHandle(), "vkCreateDebugUtilsMessengerEXT");
+        auto createFunc = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(m_instance.handle(), "vkCreateDebugUtilsMessengerEXT");
 
         if(createFunc == nullptr)
         {
@@ -25,7 +25,7 @@ vkc::DebugUtilsMessenger::DebugUtilsMessenger(const vkc::Instance& instance) : m
         }
 
         // Create the messenger
-        VkResult result = createFunc(m_instance.getHandle(), &createInfo, nullptr, &m_messenger);
+        VkResult result = createFunc(m_instance.handle(), &createInfo, nullptr, &m_messenger);
 
         if(result != VK_SUCCESS)
         {
@@ -38,12 +38,12 @@ vkc::DebugUtilsMessenger::~DebugUtilsMessenger()
 {
     if(m_instance.validationLayersEnabled())
     {
-        auto destroyFunc = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(m_instance.getHandle(), "vkDestroyDebugUtilsMessengerEXT");
+        auto destroyFunc = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(m_instance.handle(), "vkDestroyDebugUtilsMessengerEXT");
         if(destroyFunc == nullptr)
         {
             throw std::runtime_error("Failed to destroy Debug Utils Messenger");
         }
-        destroyFunc(m_instance.getHandle(), m_messenger, nullptr);
+        destroyFunc(m_instance.handle(), m_messenger, nullptr);
     }
 }
 

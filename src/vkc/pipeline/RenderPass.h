@@ -8,6 +8,7 @@
 
 
 #include <vulkan/vulkan.h>
+#include <vector>
 #include "../NonCopyable.h"
 #include "../Recreatable.h"
 
@@ -22,22 +23,25 @@ namespace vkc
         ~RenderPass();
 
         [[nodiscard]]
-        auto inline getHandle() const -> const VkRenderPass& { return m_renderPass; }
-
-        [[nodiscard]]
-        auto inline getSwapChain() const -> const vkc::SwapChain& { return m_swapChain; };
+        auto inline handle() const -> const VkRenderPass& { return m_renderPass; }
 
         auto recreate() -> void override;
-        auto cleanup() -> void override;
+        auto cleanupOld() -> void override;
 
     private:
         VkRenderPass m_renderPass;
         VkRenderPass m_oldRenderPass;
 
+        std::vector<VkFramebuffer> m_frameBuffers;
+
         const vkc::Device& m_device;
         const vkc::SwapChain& m_swapChain;
 
-        auto create() -> void;
+        auto createRenderPass() -> void;
+        auto createFrameBuffers() -> void;
+
+        auto destroyFrameBuffers() -> void;
+
     };
 }
 

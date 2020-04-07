@@ -14,7 +14,7 @@ vkc::CommandPool::CommandPool(const vkc::Device& device, const VkCommandPoolCrea
     info.queueFamilyIndex = m_device.getQueueFamilyIndices().graphics.value();
     info.flags = flags;
 
-    if(vkCreateCommandPool(m_device.getLogical(), &info, nullptr, &m_pool) != VK_SUCCESS)
+    if(vkCreateCommandPool(m_device.logical(), &info, nullptr, &m_pool) != VK_SUCCESS)
     {
         throw std::runtime_error("Command Pool creation failed");
     }
@@ -22,5 +22,5 @@ vkc::CommandPool::CommandPool(const vkc::Device& device, const VkCommandPoolCrea
 
 vkc::CommandPool::~CommandPool()
 {
-    vkDestroyCommandPool(m_device.getLogical(), m_pool, nullptr);
+    vkDestroyCommandPool(m_device.logical(), m_pool, nullptr);
 }

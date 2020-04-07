@@ -16,7 +16,7 @@ namespace vkc
             // as pNext
         virtual auto recreate() -> void = 0;
         // Cleanup old handles from recreation
-        virtual auto cleanup() -> void = 0;
+        virtual auto cleanupOld() -> void = 0;
     };
 }
 

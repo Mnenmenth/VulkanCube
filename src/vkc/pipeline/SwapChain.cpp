@@ -29,19 +29,19 @@ auto vkc::SwapChain::recreate() -> void
     createImageViews();
 }
 
-auto vkc::SwapChain::cleanup() -> void
+auto vkc::SwapChain::cleanupOld() -> void
 {
     // Destroy old swap chain if it exists
     if(m_oldSwapChain != VK_NULL_HANDLE)
     {
-        vkDestroySwapchainKHR(m_device.getLogical(), m_oldSwapChain, nullptr);
+        vkDestroySwapchainKHR(m_device.logical(), m_oldSwapChain, nullptr);
         m_oldSwapChain = VK_NULL_HANDLE;
     }
 }
 
 auto vkc::SwapChain::createSwapChain() -> void
 {
-    m_supportDetails = QuerySwapChainSupport(m_device.getPhysical(), m_window.getSurface());
+    m_supportDetails = QuerySwapChainSupport(m_device.physical(), m_window.surface());
     m_extent = ChooseSwapExtent(m_supportDetails.capabilities, m_window);
 
     // Choose the swap surface format
@@ -90,7 +90,7 @@ auto vkc::SwapChain::createSwapChain() -> void
     // Setup the swapchain
     VkSwapchainCreateInfoKHR createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    createInfo.surface = m_window.getSurface();
+    createInfo.surface = m_window.surface();
     createInfo.minImageCount = imageCount;
     createInfo.imageFormat = surfaceFormat.format;
     createInfo.imageColorSpace = surfaceFormat.colorSpace;
@@ -130,15 +130,15 @@ auto vkc::SwapChain::createSwapChain() -> void
     createInfo.clipped = VK_TRUE;
     createInfo.oldSwapchain = m_oldSwapChain;
 
-    if(vkCreateSwapchainKHR(m_device.getLogical(), &createInfo, nullptr, &m_swapChain) != VK_SUCCESS)
+    if(vkCreateSwapchainKHR(m_device.logical(), &createInfo, nullptr, &m_swapChain) != VK_SUCCESS)
     {
         throw std::runtime_error("Swap chain creation failed");
     }
 
     // Get new swap chain images
-    vkGetSwapchainImagesKHR(m_device.getLogical(), m_swapChain, &imageCount, nullptr);
+    vkGetSwapchainImagesKHR(m_device.logical(), m_swapChain, &imageCount, nullptr);
     m_images.resize(imageCount);
-    vkGetSwapchainImagesKHR(m_device.getLogical(), m_swapChain, &imageCount, m_images.data());
+    vkGetSwapchainImagesKHR(m_device.logical(), m_swapChain, &imageCount, m_images.data());
 }
 
 auto vkc::SwapChain::createImageViews() -> void
@@ -165,7 +165,7 @@ auto vkc::SwapChain::createImageViews() -> void
         createInfo.subresourceRange.baseArrayLayer = 0;
         createInfo.subresourceRange.layerCount = 1;
 
-        if(vkCreateImageView(m_device.getLogical(), &createInfo, nullptr, &m_imageViews[i]) != VK_SUCCESS)
+        if(vkCreateImageView(m_device.logical(), &createInfo, nullptr, &m_imageViews[i]) != VK_SUCCESS)
         {
             throw std::runtime_error("Image view creation failed");
         }
@@ -176,14 +176,14 @@ auto vkc::SwapChain::destroyImageViews() -> void
 {
     for(VkImageView& view : m_imageViews)
     {
-        vkDestroyImageView(m_device.getLogical(), view, nullptr);
+        vkDestroyImageView(m_device.logical(), view, nullptr);
     }
 }
 
 vkc::SwapChain::~SwapChain()
 {
     destroyImageViews();
-    vkDestroySwapchainKHR(m_device.getLogical(), m_swapChain, nullptr);
+    vkDestroySwapchainKHR(m_device.logical(), m_swapChain, nullptr);
 }
 
 auto vkc::SwapChain::QuerySwapChainSupport(const VkPhysicalDevice& device, const VkSurfaceKHR& surface) -> vkc::SwapChainSupportDetails
@@ -227,7 +227,7 @@ auto vkc::SwapChain::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabiliti
     else
     {
         glm::ivec2 size;
-        window.getFramebufferSize(size);
+        window.framebufferSize(size);
 
         VkExtent2D extent =
                 {
