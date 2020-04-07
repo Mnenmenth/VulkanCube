@@ -12,10 +12,10 @@
 #include "Instance.h"
 #include "Window.h"
 #include "Device.h"
-#include "QueueFamilyIndices.h"
-#include "QueueFamily.h"
-#include "SwapChainSupportDetails.h"
-#include "SwapChain.h"
+#include "pipeline/QueueFamilyIndices.h"
+#include "pipeline/QueueFamily.h"
+#include "pipeline/SwapChainSupportDetails.h"
+#include "pipeline/SwapChain.h"
 #include "Types.h"
 
 #endif //VULKANCUBE_VKC_H

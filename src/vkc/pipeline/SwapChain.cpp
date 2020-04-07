@@ -5,16 +5,17 @@
 
 #include <iostream>
 #include "SwapChain.h"
-#include "Device.h"
-#include "Window.h"
-#include "Types.h"
+#include "../Device.h"
+#include "../Window.h"
+#include "../Types.h"
 
-vkc::SwapChain::SwapChain(const vkc::Device& device) :
+vkc::SwapChain::SwapChain(const vkc::Device& device, const vkc::Window& window) :
         m_swapChain(VK_NULL_HANDLE),
         m_oldSwapChain(VK_NULL_HANDLE),
         m_extent(),
         m_imageFormat(),
-        m_device(device)
+        m_device(device),
+        m_window(window)
 {
     createSwapChain();
     createImageViews();
@@ -40,8 +41,8 @@ auto vkc::SwapChain::cleanup() -> void
 
 auto vkc::SwapChain::createSwapChain() -> void
 {
-    m_supportDetails = QuerySwapChainSupport(m_device.getPhysical(), m_device.getWindow().getSurface());
-    m_extent = ChooseSwapExtent(m_supportDetails.capabilities, m_device.getWindow());
+    m_supportDetails = QuerySwapChainSupport(m_device.getPhysical(), m_window.getSurface());
+    m_extent = ChooseSwapExtent(m_supportDetails.capabilities, m_window);
 
     // Choose the swap surface format
     // Default to first available format
@@ -89,7 +90,7 @@ auto vkc::SwapChain::createSwapChain() -> void
     // Setup the swapchain
     VkSwapchainCreateInfoKHR createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    createInfo.surface = m_device.getWindow().getSurface();
+    createInfo.surface = m_window.getSurface();
     createInfo.minImageCount = imageCount;
     createInfo.imageFormat = surfaceFormat.format;
     createInfo.imageColorSpace = surfaceFormat.colorSpace;

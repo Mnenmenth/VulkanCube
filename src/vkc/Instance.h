@@ -14,8 +14,6 @@
 #include "Types.h"
 
 namespace vkc {
-    class DebugUtilsMessenger;
-
     class Instance : public NonCopyable
     {
     public:

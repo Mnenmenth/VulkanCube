@@ -5,10 +5,11 @@
 
 #include <iostream>
 #include "vkc/vkc.h"
-#include "vkc/RenderPass.h"
-#include "vkc/GraphicsPipeline.h"
+#include "vkc/pipeline/RenderPass.h"
+#include "vkc/pipeline/GraphicsPipeline.h"
 #include "vkc/Vertex.h"
-#include "vkc/ShaderDetails.h"
+#include "vkc/pipeline/ShaderDetails.h"
+#include "vkc/buffer/Buffer.h"
 
 auto main() -> int
 {
@@ -25,7 +26,7 @@ auto main() -> int
 
         vkc::Device device(instance, win, vkc::Instance::DeviceExtensions);
 
-        vkc::SwapChain swapChain(device);
+        vkc::SwapChain swapChain(device, win);
 
         vkc::RenderPass renderPass(device, swapChain);
 
@@ -43,16 +44,18 @@ auto main() -> int
                         }
                 };
 
-        // Get binding and attribute descriptions
+        vkc::Buffer buffer(device, 0x100, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_SHARING_MODE_EXCLUSIVE);
+
+/*        // Get binding and attribute descriptions
         std::vector<VkVertexInputBindingDescription> bindingDescs;
         Vertex::getBindingDescription(bindingDescs);
         std::vector<VkVertexInputAttributeDescription> attrDescs;
         Vertex::getAttributeDescriptions(attrDescs);
 
-        vkc::GraphicsPipeline pipeline(device, swapChain, renderPass, shaderDetails, bindingDescs, attrDescs);
+        vkc::GraphicsPipeline pipeline(device, swapChain, renderPass, shaderDetails, bindingDescs, attrDescs);*/
 
         win.setDrawFrameFunc(
-                [&win, &device, &swapChain, &renderPass, &pipeline](bool& m_framebufferResized) {
+                [&win, &device, &swapChain, &renderPass/*, &pipeline*/](bool& m_framebufferResized) {
             if(m_framebufferResized)
             {
                 m_framebufferResized = true;
@@ -69,9 +72,9 @@ auto main() -> int
 
                 swapChain.recreate();
                 renderPass.recreate();
-                pipeline.recreate();
+/*                pipeline.recreate();
 
-                pipeline.cleanup();
+                pipeline.cleanup();*/
                 renderPass.cleanup();
                 swapChain.cleanup();
             }

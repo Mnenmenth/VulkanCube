@@ -8,7 +8,7 @@
 
 #include <vulkan/vulkan.h>
 #include <optional>
-#include "Types.h"
+#include "../Types.h"
 #include "QueueFamilyIndices.h"
 
 namespace vkc

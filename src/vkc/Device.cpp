@@ -9,8 +9,8 @@
 #include "Device.h"
 #include "Instance.h"
 #include "Window.h"
-#include "SwapChain.h"
-#include "QueueFamily.h"
+#include "pipeline/SwapChain.h"
+#include "pipeline/QueueFamily.h"
 
 vkc::Device::Device(const vkc::Instance& instance, const vkc::Window& window, const std::vector<type::cstr>& extensions) :
         m_physical(VK_NULL_HANDLE),
@@ -55,7 +55,7 @@ vkc::Device::Device(const vkc::Instance& instance, const vkc::Window& window, co
     createInfo.enabledExtensionCount = static_cast<type::uint32>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
 
-    if(m_window.getInstance().validationLayersEnabled())
+    if(m_instance.validationLayersEnabled())
     {
         createInfo.enabledLayerCount = static_cast<type::uint32>(vkc::Instance::ValidationLayers.size());
         createInfo.ppEnabledLayerNames = vkc::Instance::ValidationLayers.data();

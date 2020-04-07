@@ -8,8 +8,8 @@
 
 #include <vulkan/vulkan.h>
 #include <vector>
-#include "NonCopyable.h"
-#include "Recreatable.h"
+#include "../NonCopyable.h"
+#include "../Recreatable.h"
 
 namespace vkc
 {
@@ -47,9 +47,9 @@ namespace vkc
         const vkc::Device& m_device;
         const vkc::SwapChain& m_swapChain;
         const vkc::RenderPass& m_renderPass;
-        const std::vector<ShaderDetails>& m_shaderDetails;
-        const std::vector<VkVertexInputBindingDescription>& m_bindingDescs;
-        const std::vector<VkVertexInputAttributeDescription>& m_attrDescs;
+        std::vector<ShaderDetails> m_shaderDetails;
+        std::vector<VkVertexInputBindingDescription> m_bindingDescs;
+        std::vector<VkVertexInputAttributeDescription> m_attrDescs;
 
         auto createPipeline() -> void;
         auto createShaderModule(const std::vector<char>& code) -> VkShaderModule;

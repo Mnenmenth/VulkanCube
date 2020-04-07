@@ -5,7 +5,7 @@
 
 #include "RenderPass.h"
 #include "SwapChain.h"
-#include "Device.h"
+#include "../Device.h"
 
 vkc::RenderPass::RenderPass(const vkc::Device& device, const vkc::SwapChain& swapChain) :
         m_renderPass(VK_NULL_HANDLE),

@@ -7,9 +7,10 @@
 #define VULKANCUBE_DEVICE_H
 
 #include <vulkan/vulkan.h>
+#include <vector>
 #include "Types.h"
 #include "NonCopyable.h"
-#include "QueueFamilyIndices.h"
+#include "pipeline/QueueFamilyIndices.h"
 
 namespace vkc
 {

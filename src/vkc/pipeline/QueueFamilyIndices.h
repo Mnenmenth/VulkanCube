@@ -7,7 +7,7 @@
 #define VULKANCUBE_QUEUEFAMILYINDICES_H
 
 #include <optional>
-#include "Types.h"
+#include "../Types.h"
 
 namespace vkc
 {

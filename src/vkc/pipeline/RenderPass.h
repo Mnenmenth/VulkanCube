@@ -8,8 +8,8 @@
 
 
 #include <vulkan/vulkan.h>
-#include "NonCopyable.h"
-#include "Recreatable.h"
+#include "../NonCopyable.h"
+#include "../Recreatable.h"
 
 namespace vkc
 {

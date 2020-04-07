@@ -8,8 +8,8 @@
 
 #include <vector>
 #include "SwapChainSupportDetails.h"
-#include "NonCopyable.h"
-#include "Recreatable.h"
+#include "../NonCopyable.h"
+#include "../Recreatable.h"
 
 namespace vkc
 {
@@ -19,7 +19,7 @@ namespace vkc
     class SwapChain : public NonCopyable, public Recreatable
     {
     public:
-        explicit SwapChain(const vkc::Device& device);
+        explicit SwapChain(const vkc::Device& device, const vkc::Window& window);
         ~SwapChain();
 
         auto recreate() -> void override;
@@ -40,6 +40,7 @@ namespace vkc
 
     private:
         const vkc::Device& m_device;
+        const vkc::Window& m_window;
 
         SwapChainSupportDetails m_supportDetails;
         VkSwapchainKHR m_swapChain;

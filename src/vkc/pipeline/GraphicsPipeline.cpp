@@ -4,12 +4,12 @@
   */
 
 #include "GraphicsPipeline.h"
-#include "Types.h"
+#include "../Types.h"
 #include "SwapChain.h"
 #include "RenderPass.h"
-#include "Device.h"
+#include "../Device.h"
 #include "ShaderDetails.h"
-#include "FileIO.h"
+#include "../FileIO.h"
 
 vkc::GraphicsPipeline::GraphicsPipeline(
         const vkc::Device& device,
@@ -21,7 +21,6 @@ vkc::GraphicsPipeline::GraphicsPipeline(
 ) :
         m_pipeline(VK_NULL_HANDLE),
         m_oldPipeline(VK_NULL_HANDLE),
-        m_desciptor(VK_NULL_HANDLE),
         m_layout(VK_NULL_HANDLE),
         m_oldLayout(VK_NULL_HANDLE),
 
@@ -168,7 +167,8 @@ auto vkc::GraphicsPipeline::createPipeline() -> void
     VkPipelineLayoutCreateInfo layoutInfo = {};
     layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     layoutInfo.setLayoutCount = 1;
-    layoutInfo.pSetLayouts = &m_desciptor;
+    //TODO
+    //layoutInfo.pSetLayouts = &m_desciptor;
     layoutInfo.pushConstantRangeCount = 0;
     layoutInfo.pPushConstantRanges = nullptr;
 
