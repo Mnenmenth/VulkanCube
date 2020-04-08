@@ -94,8 +94,7 @@ auto vkc::DrawCommandBuffers::create() -> void
         vkCmdBindPipeline(m_commands[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.pipeline());
 
         // Bind vertex and index buffers
-        VkDeviceSize offset = m_vertexOffset;
-        vkCmdBindVertexBuffers(m_commands[i], 0, 1, &m_modelBuffer.handle(), &offset);
+        vkCmdBindVertexBuffers(m_commands[i], 0, 1, &m_modelBuffer.handle(), &m_vertexOffset);
         vkCmdBindIndexBuffer(m_commands[i], m_modelBuffer.handle(), m_indexOffset, VK_INDEX_TYPE_UINT16);
 
         // Bind the descriptor sets

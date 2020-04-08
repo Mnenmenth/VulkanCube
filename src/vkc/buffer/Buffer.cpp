@@ -47,7 +47,7 @@ auto vkc::Buffer::setContents(VkDeviceSize size, VkDeviceSize offset, const void
     if(m_useStagingBuffer)
     {
         void* buff;
-        vkMapMemory(m_device.logical(), m_stagingMem, offset, size, 0, &buff);
+        vkMapMemory(m_device.logical(), m_stagingMem, 0, size, 0, &buff);
         memcpy(buff, data, static_cast<type::size>(size));
         vkUnmapMemory(m_device.logical(), m_stagingMem);
         copyBuffer(m_stagingBuff, size, 0, m_buffer, offset);
@@ -200,5 +200,5 @@ auto vkc::Buffer::createBufferAndMem(
     }
 
     // Bind buffer to memory
-    vkBindBufferMemory(m_device.logical(), buff, mem, offset);
+    vkBindBufferMemory(m_device.logical(), buff, mem, align(offset, memReq.alignment));
 }

@@ -28,7 +28,16 @@ static constexpr std::array<Vertex, 4> vertices =
                 Vertex{{-0.5f,  0.5f}, { 1.0f,  1.0f,  1.0f}}
 
         };
+
 static constexpr std::array<type::uint16, 6> indices = {0, 1, 2, 2, 3, 0};
+
+//static const std::vector<Vertex> vertices =
+//        {
+//                Vertex{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+//                Vertex{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+//                Vertex{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+//        };
+//static const std::vector<type::uint16> indices = {0, 1, 2};
 
 struct MVP
 {

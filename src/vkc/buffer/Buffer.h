@@ -40,6 +40,7 @@ namespace vkc
         auto resize(type::uint32 size) -> void;
 
         auto setContents(VkDeviceSize size, VkDeviceSize offset, const void* data) -> void;
+        static inline auto align(VkDeviceSize size, VkDeviceSize alignment) { return (size + alignment - 1) & -alignment; }
 
     protected:
         bool m_useStagingBuffer;
@@ -83,6 +84,7 @@ namespace vkc
                 VkBuffer dstBuffer,
                 VkDeviceSize dstOffset
                 ) -> void;
+
     };
 }
 
