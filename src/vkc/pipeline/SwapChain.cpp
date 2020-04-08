@@ -102,7 +102,7 @@ auto vkc::SwapChain::createSwapChain() -> void
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
     // How to handle swap chain images across multiple queue families
-    const QueueFamilyIndices& indices = m_device.getQueueFamilyIndices();
+    const QueueFamilyIndices& indices = m_device.queueFamilyIndices();
     type::uint32 queueFamilyIndices[] = {indices.graphics.value(), indices.present.value()};
 
     // Determine if there are multiple queue families

@@ -8,7 +8,6 @@
 
 vkc::UBO::UBO(
         const vkc::Device& device,
-        const vkc::SwapChain& swapChain,
         VkDeviceSize size,
         type::uint32 layoutBinding,
         type::uint32 numDescriptorSets,

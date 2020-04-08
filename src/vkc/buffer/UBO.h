@@ -10,19 +10,16 @@
 #include <vector>
 #include "../NonCopyable.h"
 #include "Buffer.h"
-#include "../Recreatable.h"
 
 //TODO: Multiple layout bindings
 namespace vkc
 {
     class Device;
-    class SwapChain;
     class UBO : public NonCopyable
     {
     public:
         UBO(
                 const vkc::Device& device,
-                const vkc::SwapChain& swapChain,
                 VkDeviceSize size,
                 type::uint32 layoutBinding,
                 type::uint32 numDescriptorSets,
@@ -32,10 +29,14 @@ namespace vkc
 
         auto recreateDescriptorSets(type::uint32 numDescriptorSets) -> void;
 
-        inline auto setContents(type::uint32 descriptorIndex, VkDeviceSize size, VkDeviceSize offset, void* data) -> void;
+        auto setContents(type::uint32 descriptorIndex, VkDeviceSize size, VkDeviceSize offset, void* data) -> void;
 
         [[nodiscard]]
         inline auto size() const -> VkDeviceSize { return m_uboSize; }
+        [[nodiscard]]
+        inline auto descriptorSetLayout() const -> const VkDescriptorSetLayout& { return m_descriptorSetLayout; }
+        [[nodiscard]]
+        inline auto descriptorSet(type::uint32 index) const -> const VkDescriptorSet& { return m_descriptorSets[index]; }
 
     private:
         vkc::Buffer m_buffer;

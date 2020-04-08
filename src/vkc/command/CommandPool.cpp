@@ -11,7 +11,7 @@ vkc::CommandPool::CommandPool(const vkc::Device& device, const VkCommandPoolCrea
     VkCommandPoolCreateInfo info = {};
     info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     // Hard code graphics family since that's all its going to be used for
-    info.queueFamilyIndex = m_device.getQueueFamilyIndices().graphics.value();
+    info.queueFamilyIndex = m_device.queueFamilyIndices().graphics.value();
     info.flags = flags;
 
     if(vkCreateCommandPool(m_device.logical(), &info, nullptr, &m_pool) != VK_SUCCESS)

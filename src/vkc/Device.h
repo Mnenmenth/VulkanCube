@@ -27,11 +27,11 @@ namespace vkc
         [[nodiscard]]
         inline auto logical() const -> const VkDevice& { return m_logical; }
         [[nodiscard]]
-        inline auto getQueueFamilyIndices() const -> const vkc::QueueFamilyIndices& { return m_indices; }
+        inline auto queueFamilyIndices() const -> const vkc::QueueFamilyIndices& { return m_indices; }
         [[nodiscard]]
-        inline auto getGraphicsQueue() const -> const VkQueue& { return m_graphicsQueue; }
+        inline auto graphicsQueue() const -> const VkQueue& { return m_graphicsQueue; }
         [[nodiscard]]
-        inline auto getPresentQueue() const -> const VkQueue& { return m_presentQueue; }
+        inline auto presentQueue() const -> const VkQueue& { return m_presentQueue; }
 
     private:
         VkPhysicalDevice m_physical;

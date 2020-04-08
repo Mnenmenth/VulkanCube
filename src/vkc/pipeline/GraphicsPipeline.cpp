@@ -3,6 +3,7 @@
   * https://github.com/Mnenmenth
   */
 
+#include <iostream>
 #include "GraphicsPipeline.h"
 #include "../Types.h"
 #include "SwapChain.h"
@@ -15,12 +16,12 @@ vkc::GraphicsPipeline::GraphicsPipeline(
         const vkc::Device& device,
         const vkc::SwapChain& swapChain,
         const vkc::RenderPass& renderPass,
+        const std::vector<VkDescriptorSetLayout>& descriptorLayouts,
         const std::vector<ShaderDetails>& shaderDetails,
         const std::vector<VkVertexInputBindingDescription>& bindingDescs,
         const std::vector<VkVertexInputAttributeDescription>& attrDescs
 ) :
         m_pipeline(VK_NULL_HANDLE),
-        m_oldPipeline(VK_NULL_HANDLE),
         m_layout(VK_NULL_HANDLE),
         m_oldLayout(VK_NULL_HANDLE),
 
@@ -28,6 +29,7 @@ vkc::GraphicsPipeline::GraphicsPipeline(
         m_swapChain(swapChain),
         m_renderPass(renderPass),
 
+        m_descriptorLayouts(descriptorLayouts),
         m_shaderDetails(shaderDetails),
         m_bindingDescs(bindingDescs),
         m_attrDescs(attrDescs)
@@ -43,49 +45,64 @@ vkc::GraphicsPipeline::~GraphicsPipeline()
 
 auto vkc::GraphicsPipeline::recreate() -> void
 {
-    m_oldPipeline = m_pipeline;
-    m_oldLayout = m_layout;
+    vkDestroyPipeline(m_device.logical(), m_pipeline, nullptr);
+    vkDestroyPipelineLayout(m_device.logical(), m_layout, nullptr);
     createPipeline();
 }
 
-auto vkc::GraphicsPipeline::cleanupOld() -> void
-{
-    if(m_oldPipeline != VK_NULL_HANDLE)
-    {
-        vkDestroyPipeline(m_device.logical(), m_oldPipeline, nullptr);
-        m_oldPipeline = VK_NULL_HANDLE;
-    }
-    if(m_oldLayout != VK_NULL_HANDLE)
-    {
-        vkDestroyPipelineLayout(m_device.logical(), m_oldLayout, nullptr);
-        m_oldLayout = VK_NULL_HANDLE;
-    }
-}
-
-
 auto vkc::GraphicsPipeline::createPipeline() -> void
 {
-    std::vector<VkPipelineShaderStageCreateInfo> shaderStages(m_shaderDetails.size());
-    for(const ShaderDetails& shader : m_shaderDetails)
-    {
-        std::vector<char> code;
-        FileIO::ReadFile(shader.filePath, code);
+//    std::vector<VkPipelineShaderStageCreateInfo> shaderStages(m_shaderDetails.size());
+//    for(const ShaderDetails& shader : m_shaderDetails)
+//    {
+//        std::vector<char> code;
+//        FileIO::ReadFile(shader.filePath, code);
+//
+//        VkShaderModule module = createShaderModule(code);
+//
+//        VkPipelineShaderStageCreateInfo stageInfo = {};
+//        stageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+//        stageInfo.stage = shader.stage;
+//        stageInfo.module = module;
+//        // Entry point into the shader (i.e. "main" method)
+//            // It's possible to have multiple entry points in a shader
+//        stageInfo.pName = shader.entryPoint.c_str();
+//        stageInfo.pSpecializationInfo = nullptr;
+//
+//        shaderStages.push_back(stageInfo);
+//    }
 
-        VkShaderModule module = createShaderModule(code);
+    std::vector<char> code;
+    FileIO::ReadFile(m_shaderDetails[0].filePath, code);
 
-        VkPipelineShaderStageCreateInfo stageInfo = {};
-        stageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        stageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-        stageInfo.module = module;
-        // Entry point into the shader (i.e. "main" method)
-            // It's possible to have multiple entry points in a shader
-        stageInfo.pName = "main";
-        stageInfo.pSpecializationInfo = nullptr;
+    VkShaderModule module = createShaderModule(code);
 
-        shaderStages.push_back(stageInfo);
-    }
+    VkPipelineShaderStageCreateInfo stageInfo = {};
+    stageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    stageInfo.stage = m_shaderDetails[0].stage;
+    stageInfo.module = module;
+    // Entry point into the shader (i.e. "main" method)
+    // It's possible to have multiple entry points in a shader
+    stageInfo.pName = m_shaderDetails[0].entryPoint.c_str();
+    stageInfo.pSpecializationInfo = nullptr;
+
+    FileIO::ReadFile(m_shaderDetails[1].filePath, code);
+
+    module = createShaderModule(code);
+
+    VkPipelineShaderStageCreateInfo stageInfo1 = {};
+    stageInfo1.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    stageInfo1.stage = m_shaderDetails[1].stage;
+    stageInfo1.module = module;
+    // Entry point into the shader (i.e. "main" method)
+    // It's possible to have multiple entry points in a shader
+    stageInfo1.pName = m_shaderDetails[1].entryPoint.c_str();
+    stageInfo1.pSpecializationInfo = nullptr;
+
+    VkPipelineShaderStageCreateInfo shaderStages[] = { stageInfo, stageInfo1 };
 
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
+    vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputInfo.vertexBindingDescriptionCount = static_cast<type::uint32>(m_bindingDescs.size());
     vertexInputInfo.vertexAttributeDescriptionCount = static_cast<type::uint32>(m_attrDescs.size());
     vertexInputInfo.pVertexBindingDescriptions = m_bindingDescs.data();
@@ -140,6 +157,16 @@ auto vkc::GraphicsPipeline::createPipeline() -> void
     rasterizer.depthBiasClamp = 0.0f;
     rasterizer.depthBiasSlopeFactor = 0.0f;
 
+    // Multisampling
+    VkPipelineMultisampleStateCreateInfo multisampling = {};
+    multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+    multisampling.sampleShadingEnable = VK_FALSE;
+    multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+    multisampling.minSampleShading = 1.0f;
+    multisampling.pSampleMask = nullptr;
+    multisampling.alphaToCoverageEnable = VK_FALSE;
+    multisampling.alphaToOneEnable = VK_FALSE;
+
     // Color Blending
     VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
     colorBlendAttachment.colorWriteMask =
@@ -154,7 +181,7 @@ auto vkc::GraphicsPipeline::createPipeline() -> void
     colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
     // Disable bitwise combination blending
     colorBlending.logicOpEnable = VK_FALSE;
-    colorBlending.logicOpEnable = VK_LOGIC_OP_COPY;
+    colorBlending.logicOp = VK_LOGIC_OP_COPY;
     colorBlending.attachmentCount = 1;
     colorBlending.pAttachments = &colorBlendAttachment;
     //Which color channels in framebuffer will be affected
@@ -166,9 +193,8 @@ auto vkc::GraphicsPipeline::createPipeline() -> void
 
     VkPipelineLayoutCreateInfo layoutInfo = {};
     layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    layoutInfo.setLayoutCount = 1;
-    //TODO
-    //layoutInfo.pSetLayouts = &m_desciptor;
+    layoutInfo.setLayoutCount = static_cast<type::uint32>(m_descriptorLayouts.size());
+    layoutInfo.pSetLayouts = m_descriptorLayouts.data();
     layoutInfo.pushConstantRangeCount = 0;
     layoutInfo.pPushConstantRanges = nullptr;
 
@@ -180,25 +206,21 @@ auto vkc::GraphicsPipeline::createPipeline() -> void
 
     VkGraphicsPipelineCreateInfo pipelineInfo = {};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pipelineInfo.stageCount = static_cast<type::uint32>(shaderStages.size());
-    pipelineInfo.pStages = shaderStages.data();
+    pipelineInfo.stageCount = static_cast<type::uint32>(m_shaderDetails.size());
+    //pipelineInfo.pStages = shaderStages.data();
+    pipelineInfo.pStages = shaderStages;
     pipelineInfo.pVertexInputState = &vertexInputInfo;
     pipelineInfo.pInputAssemblyState = &inputAssembly;
     pipelineInfo.pViewportState = &viewportState;
     pipelineInfo.pRasterizationState = &rasterizer;
     pipelineInfo.pColorBlendState = &colorBlending;
-    pipelineInfo.pMultisampleState = nullptr;
+    pipelineInfo.pMultisampleState = &multisampling;
     pipelineInfo.pDepthStencilState = nullptr;
     pipelineInfo.pDynamicState = nullptr;
     pipelineInfo.layout = m_layout;
     pipelineInfo.renderPass = m_renderPass.handle();
     pipelineInfo.subpass = 0;
-
-    if(m_oldLayout != VK_NULL_HANDLE)
-    {
-        pipelineInfo.flags = VK_PIPELINE_CREATE_DERIVATIVE_BIT;
-    }
-    pipelineInfo.basePipelineHandle = m_oldPipeline;
+    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
     pipelineInfo.basePipelineIndex = -1;
 
     if(vkCreateGraphicsPipelines(m_device.logical(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_pipeline) != VK_SUCCESS)

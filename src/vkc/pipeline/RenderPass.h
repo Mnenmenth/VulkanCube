@@ -10,13 +10,13 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 #include "../NonCopyable.h"
-#include "../Recreatable.h"
+#include "../Types.h"
 
 namespace vkc
 {
     class Device;
     class SwapChain;
-    class RenderPass : public NonCopyable, public Recreatable
+    class RenderPass : public NonCopyable
     {
     public:
         RenderPass(const vkc::Device& device, const vkc::SwapChain& swapChain);
@@ -24,9 +24,11 @@ namespace vkc
 
         [[nodiscard]]
         auto inline handle() const -> const VkRenderPass& { return m_renderPass; }
+        [[nodiscard]]
+        inline auto frameBuffer(type::uint32 index) const -> const VkFramebuffer& { return m_frameBuffers[index]; }
 
-        auto recreate() -> void override;
-        auto cleanupOld() -> void override;
+        auto recreate() -> void;
+        auto cleanupOld() -> void;
 
     private:
         VkRenderPass m_renderPass;

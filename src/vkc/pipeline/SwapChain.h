@@ -9,7 +9,6 @@
 #include <vector>
 #include "SwapChainSupportDetails.h"
 #include "../NonCopyable.h"
-#include "../Recreatable.h"
 #include "../Types.h"
 
 namespace vkc
@@ -17,14 +16,14 @@ namespace vkc
     class Device;
     class Window;
 
-    class SwapChain : public NonCopyable, public Recreatable
+    class SwapChain : public NonCopyable
     {
     public:
         explicit SwapChain(const vkc::Device& device, const vkc::Window& window);
         ~SwapChain();
 
-        auto recreate() -> void override;
-        auto cleanupOld() -> void override;
+        auto recreate() -> void;
+        auto cleanupOld() -> void;
 
         [[nodiscard]]
         inline auto handle() const -> const VkSwapchainKHR& { return m_swapChain; }

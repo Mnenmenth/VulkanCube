@@ -9,7 +9,6 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 #include "../NonCopyable.h"
-#include "../Recreatable.h"
 
 namespace vkc
 {
@@ -17,21 +16,21 @@ namespace vkc
     class SwapChain;
     class RenderPass;
     struct ShaderDetails;
-    class GraphicsPipeline : public NonCopyable, public Recreatable
+    class GraphicsPipeline : public NonCopyable
     {
     public:
         GraphicsPipeline(
                 const vkc::Device& device,
                 const vkc::SwapChain& swapChain,
                 const vkc::RenderPass& renderPass,
+                const std::vector<VkDescriptorSetLayout>& descriptorLayouts,
                 const std::vector<ShaderDetails>& shaderDetails,
                 const std::vector<VkVertexInputBindingDescription>& bindingDescs,
                 const std::vector<VkVertexInputAttributeDescription>& attrDescs
                 );
         ~GraphicsPipeline();
 
-        auto recreate() -> void override;
-        auto cleanupOld() -> void override;
+        auto recreate() -> void;
 
         [[nodiscard]]
         auto inline pipeline() const -> const VkPipeline& { return m_pipeline; }
@@ -40,13 +39,13 @@ namespace vkc
 
     private:
         VkPipeline m_pipeline;
-        VkPipeline m_oldPipeline;
         VkPipelineLayout m_layout;
         VkPipelineLayout m_oldLayout;
 
         const vkc::Device& m_device;
         const vkc::SwapChain& m_swapChain;
         const vkc::RenderPass& m_renderPass;
+        std::vector<VkDescriptorSetLayout> m_descriptorLayouts;
         std::vector<ShaderDetails> m_shaderDetails;
         std::vector<VkVertexInputBindingDescription> m_bindingDescs;
         std::vector<VkVertexInputAttributeDescription> m_attrDescs;

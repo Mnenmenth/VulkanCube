@@ -141,9 +141,9 @@ auto vkc::Buffer::copyBuffer(
     submitInfo.pCommandBuffers = &cmdBuff;
 
     //TODO: Fence for async transfers
-    vkQueueSubmit(m_device.getGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueSubmit(m_device.graphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
     //TODO: This is required if not using a fence
-    vkQueueWaitIdle(m_device.getGraphicsQueue());
+    vkQueueWaitIdle(m_device.graphicsQueue());
 
     vkFreeCommandBuffers(m_device.logical(), m_cmdPool.handle(), 1, &cmdBuff);
 }

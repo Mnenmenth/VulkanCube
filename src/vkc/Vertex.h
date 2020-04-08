@@ -34,6 +34,7 @@ struct Vertex
 
     static auto getAttributeDescriptions(std::vector<VkVertexInputAttributeDescription>& out) -> void
     {
+        out.resize(2);
         // Which binding the per-vertex data comes from
         out[0].binding = 0;
         // Refers to the 'location =' in vertex layout
