@@ -12,7 +12,7 @@ vkc::Window::Window(const glm::ivec2& dimensions, const std::string& title, cons
         m_title(title),
         m_instance(instance),
         m_surface(VK_NULL_HANDLE),
-        m_framebufferResized(false),
+        m_framebufferResized(true),
         m_drawFrameFunc([](bool&){})
 {
 /*    glfwInit();

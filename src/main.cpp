@@ -65,7 +65,7 @@ auto updateUbo(vkc::UBO& ubo, const vkc::SwapChain& swapChain, type::uint32 curr
     // Look into passing a small buffer of push constants
     ubo.setContents(currImg, sizeof(mvp), 0, &mvp);
 }
-
+auto GenCube(std::vector<Vertex>* outVertices, std::vector<type::uint16>* outIndices, float size) -> void;
 auto recreateSwapChain(
         bool& framebufferResized,
         vkc::Window& win,
@@ -91,6 +91,10 @@ auto drawFrame(
 
 auto main() -> int
 {
+
+/*    std::vector<Vertex> vertices;
+    std::vector<type::uint16> indices;
+    GenCube(&vertices, &indices, 0.5f);*/
 
     try
     {
@@ -292,4 +296,62 @@ auto drawFrame(
     }
 
     currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+}
+
+auto GenCube(std::vector<Vertex>* outVertices, std::vector<type::uint16>* outIndices, float size) -> void
+{
+    std::array<Vertex, 24> vertices =
+            {
+                    // Back Face
+                    Vertex{{ (size/2.0f),  (size/2.0f)}, { 0.0f,  0.0f, -1.0f}}, /* Top Left     */
+                    Vertex{{-(size/2.0f),  (size/2.0f)}, { 0.0f,  0.0f, -1.0f}}, /* Top Right    */
+                    Vertex{{ (size/2.0f), -(size/2.0f)}, { 0.0f,  0.0f, -1.0f}}, /* Bottom Left  */
+                    Vertex{{-(size/2.0f), -(size/2.0f)}, { 0.0f,  0.0f, -1.0f}}, /* Bottom Right */
+
+                    // Front Face
+                    Vertex{{-(size/2.0f),  (size/2.0f)}, { 0.0f,  0.0f,  1.0f}}, /* Top Left     */
+                    Vertex{{ (size/2.0f),  (size/2.0f)}, { 0.0f,  0.0f,  1.0f}}, /* Top Right    */
+                    Vertex{{-(size/2.0f), -(size/2.0f)}, { 0.0f,  0.0f,  1.0f}}, /* Bottom Left  */
+                    Vertex{{ (size/2.0f), -(size/2.0f)}, { 0.0f,  0.0f,  1.0f}}, /* Bottom Right */
+
+                    // Left Face
+                    Vertex{{-(size/2.0f),  (size/2.0f)}, {-1.0f,  0.0f,  0.0f}}, /* Top Left     */
+                    Vertex{{-(size/2.0f),  (size/2.0f)}, {-1.0f,  0.0f,  0.0f}}, /* Top Right    */
+                    Vertex{{-(size/2.0f), -(size/2.0f)}, {-1.0f,  0.0f,  0.0f}}, /* Bottom Left  */
+                    Vertex{{-(size/2.0f), -(size/2.0f)}, {-1.0f,  0.0f,  0.0f}}, /* Bottom Right */
+
+                    // Right Face
+                    Vertex{{ (size/2.0f),  (size/2.0f)}, { 1.0f,  0.0f,  0.0f}}, /* Top Left     */
+                    Vertex{{ (size/2.0f),  (size/2.0f)}, { 1.0f,  0.0f,  0.0f}}, /* Top Right    */
+                    Vertex{{ (size/2.0f), -(size/2.0f)}, { 1.0f,  0.0f,  0.0f}}, /* Bottom Left  */
+                    Vertex{{ (size/2.0f), -(size/2.0f)}, { 1.0f,  0.0f,  0.0f}}, /* Bottom Right */
+
+                    // Top Face
+                    Vertex{{-(size/2.0f),  (size/2.0f)}, { 0.0f,  1.0f,  0.0f}}, /* Top Left     */
+                    Vertex{{ (size/2.0f),  (size/2.0f)}, { 0.0f,  1.0f,  0.0f}}, /* Top Right    */
+                    Vertex{{-(size/2.0f),  (size/2.0f)}, { 0.0f,  1.0f,  0.0f}}, /* Bottom Left  */
+                    Vertex{{ (size/2.0f),  (size/2.0f)}, { 0.0f,  1.0f,  0.0f}}, /* Bottom Right */
+
+                    // Bottom Face
+                    Vertex{{-(size/2.0f), -(size/2.0f)}, { 0.0f, -1.0f,  0.0f}}, /* Top Left     */
+                    Vertex{{ (size/2.0f), -(size/2.0f)}, { 0.0f, -1.0f,  0.0f}}, /* Top Right    */
+                    Vertex{{-(size/2.0f), -(size/2.0f)}, { 0.0f, -1.0f,  0.0f}}, /* Bottom Left  */
+                    Vertex{{ (size/2.0f), -(size/2.0f)}, { 0.0f, -1.0f,  0.0f}}, /* Bottom Right */
+            };
+    outVertices->reserve(vertices.size());
+    outVertices->insert(outVertices->end(), std::begin(vertices), std::end(vertices));
+
+    outIndices->reserve(vertices.size()*3);
+    for(int i = 0; i < 6; i++)
+    {
+        // Stride for each pair of triangles (3 verts per triangle * 2 triangles = 6)
+        // Stride for vertex-index group (1 index per vertex * 4 vertices for face = 4)
+        int groupStride = 4*i;
+        outIndices->push_back(1+groupStride);
+        outIndices->push_back(0+groupStride);
+        outIndices->push_back(2+groupStride);
+        outIndices->push_back(2+groupStride);
+        outIndices->push_back(3+groupStride);
+        outIndices->push_back(1+groupStride);
+    }
 }
